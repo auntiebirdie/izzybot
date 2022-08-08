@@ -1,0 +1,41 @@
+[{
+  "name": "role",
+  "description": "Call yourself whatever the fock you want.",
+  "doNotAck": true
+}, {
+  "name": "consent",
+  "description": "Give or revoke your consent to go below deck (view NSFW channels).",
+  "publicAck": false
+}, {
+  "name": "pronouns",
+  "description": "Pick your preferred pronouns.",
+  "publicAck": false
+}, {
+  "name": "support",
+  "description": "Support the server with fake money to unlock fake tiers in a fake patreon called PatreARRn.",
+  "publicAck": false,
+  "options": [{
+    "name": "dollarrs",
+    "description": "How many fake dollARRs do you want to give?",
+    "type": 4,
+    "required": true
+  }]
+}, {
+  "name": "inspire",
+  "description": "Time for some Con-spiration!",
+  "publicAck": true
+}, {
+  "name": "ship",
+  "description": "Generate a shipping prompt.",
+  "publicAck": true
+}, {
+  "name": "who",
+  "description": "Look up a user's intro (if one exists)",
+  "publicAck": false,
+  "options": [{
+    "name": "user",
+    "description": "Which person?",
+    "type": 6,
+    "required": true
+  }]
+}]

@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@googleapis/drive": "^3.0.1",
+    "axios": "^0.27.2",
+    "chance": "^1.1.8",
+    "color-name-list": "^9.18.1",
+    "discord.js": "^14.0.3",
+    "google-auth-library": "^8.1.1",
+    "google-spreadsheet": "^3.3.0"
+  }
+}

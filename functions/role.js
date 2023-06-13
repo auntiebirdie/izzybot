@@ -67,7 +67,7 @@ module.exports = async function(interaction) {
         name: data.name,
         color: data.color,
         hoist: true,
-        position: 15,
+        position: 14,
         permissions: [Discord.PermissionFlagsBits.ViewChannel]
       }).then((role) => {
         interaction.member.roles.add(role).then(() => {

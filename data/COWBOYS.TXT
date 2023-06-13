@@ -1,0 +1,3 @@
+curl "https://api.unsplash.com/photos/random?query=cowboy&count=30&client_id=7jkTirCv62Lvw03DOdl1Rz9osSkwgQqJ_tl977rx0JM" | jq -r '[.[].urls.regular]' > more.json && jq -rs '.[0] + .[1]' cowboys.json more.json > test.json && cp test.json cowboys.json
+
+curl "https://api.unsplash.com/photos/random?query=cowboy&count=30&client_id=7jkTirCv62Lvw03DOdl1Rz9osSkwgQqJ_tl977rx0JM" | jq -r '[.[] | {image: .urls.regular, source: .links.html , credit: .user.username}]' > more.json && jq -rs '.[0] + .[1]' cowboys_unsplash.json more.json > tmp.json && mv tmp.json cowboys_unsplash.json

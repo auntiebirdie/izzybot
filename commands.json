@@ -1,41 +1,67 @@
 [{
-  "name": "role",
-  "description": "Call yourself whatever the fock you want.",
-  "doNotAck": true
-}, {
-  "name": "consent",
-  "description": "Give or revoke your consent to go below deck (view NSFW channels).",
-  "publicAck": false
-}, {
-  "name": "pronouns",
-  "description": "Pick your preferred pronouns.",
-  "publicAck": false
-}, {
-  "name": "support",
-  "description": "Support the server with fake money to unlock fake tiers in a fake patreon called PatreARRn.",
-  "publicAck": false,
-  "options": [{
-    "name": "dollarrs",
-    "description": "How many fake dollARRs do you want to give?",
-    "type": 4,
-    "required": true
-  }]
-}, {
-  "name": "inspire",
-  "description": "Time for some Con-spiration!",
-  "publicAck": true
-}, {
-  "name": "ship",
-  "description": "Generate a shipping prompt.",
-  "publicAck": true
-}, {
-  "name": "who",
-  "description": "Look up a user's intro (if one exists)",
-  "publicAck": false,
-  "options": [{
-    "name": "user",
-    "description": "Which person?",
-    "type": 6,
-    "required": true
-  }]
-}]
+    "name": "role",
+    "description": "Call yourself whatever the fock you want.",
+    "doNotAck": true
+  }, {
+    "name": "consent",
+    "description": "Give or revoke your consent to go below deck (view NSFW channels).",
+    "publicAck": false
+  }, {
+    "name": "pronouns",
+    "description": "Pick your preferred pronouns.",
+    "publicAck": false
+  }, {
+    "name": "inspire",
+    "description": "Time for some Con-spiration!",
+    "publicAck": true
+  }, {
+    "name": "ship",
+    "description": "Generate a shipping prompt.",
+    "publicAck": true
+  }, {
+    "name": "sprint",
+    "description": "Start a new sprint in #working-together",
+    "doNotAck": true
+  }, {
+    "name": "who",
+    "description": "Look up a user's intro (if one exists)",
+    "publicAck": false,
+    "options": [{
+      "name": "user",
+      "description": "Which person?",
+      "type": 6,
+      "required": true
+    }]
+  },
+  {
+    "name": "bottle",
+    "description": "Toss an encouraging or nice message in a bottle for a user to receive.",
+    "doNotAck": true,
+    "options": [{
+      "name": "user",
+      "description": "The user you want to send the bottle to",
+      "type": 6,
+      "required": true
+    }]
+  },
+  {
+    "name": "cowboys",
+    "description": "Generate the next best-selling Cowboy romance novel.",
+    "publicAck": true
+  },
+  {
+    "name": "breach",
+    "description": "There's been a breach of the containment zone.",
+    "publicAck": true
+  },
+  {
+    "name": "hearts",
+    "description": "Try to win Izzy's praise and affection!",
+    "publicAck": true
+  },
+  {
+    "name": "house",
+    "description": "Pulls up a random house listing. Why? Why not!",
+    "publicAck": true
+  }
+]

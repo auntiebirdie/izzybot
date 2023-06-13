@@ -9,7 +9,7 @@ module.exports = async function(interaction) {
   } else {
     interaction.guild.channels.fetch('993970235499626546').then((channel) => {
       channel.messages.fetch().then((messages) => {
-        var intro = messages.find((message) => message.author.id == user.id);
+        var intro = messages.find((message) => message.author.id == user.id && message.reactions.resolve('👋'));
 
         interaction.editReply({
           content: intro ? `<@${user.id}>\r\n\`\`\`\r\n${intro.content}\r\n\`\`\`` : "I can't find an intro for that user.",

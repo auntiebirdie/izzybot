@@ -9,7 +9,7 @@ module.exports = async function(interaction) {
     return "normal";
   });
 
-  var job = await axios.get('https://writingexercises.co.uk/php/job.php').then((response) => {
+  var job = await axios.get('https://writingexercises.co.uk/php_WE/job.php').then((response) => {
     return response.data;
   }).catch((err) => {
     return "love interest";

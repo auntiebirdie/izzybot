@@ -11,7 +11,7 @@ module.exports = async function(interaction) {
 
   await doc.loadInfo();
 
-  var sheet = doc.sheetsByTitle['Sheet1'];
+  var sheet = doc.sheetsByTitle[interaction.channel.id == '993951486339977237' ? 'ValDust' : 'Sheet1'];
 
   var rows = await sheet.getRows();
 

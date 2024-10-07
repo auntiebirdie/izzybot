@@ -12,6 +12,7 @@
     "emoji-unicode": "^2.0.1",
     "google-auth-library": "^8.1.1",
     "google-spreadsheet": "^3.3.0",
+    "node-cron": "^3.0.3",
     "sharp": "^0.30.7",
     "simple-json-db": "^2.0.0"
   }

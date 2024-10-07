@@ -2,23 +2,23 @@ module.exports = async function(interaction) {
   if (interaction.customId) {
     switch (interaction.customId) {
       case 'join':
-        joinSprint();
+        joinSprint(interaction.channel.id);
         break;
       case 'leave':
-        leaveSprint();
+        leaveSprint(interaction.channel.id);
         break;
     }
   } else {
-    if (interaction.client.sprint) {
-      joinSprint();
+    if (interaction.client.sprint[interaction.channel.id]) {
+      joinSprint(interaction.channel.id);
     } else {
-      startSprint();
+      startSprint(interaction.channel.id);
     }
   }
 
-  function startSprint() {
+  function startSprint(channel) {
     interaction.reply({
-      content: `A new sprint has started! ⏳ 15 minutes\r\n\r\nSprinters: <@${interaction.user.id}>`,
+      content: `<@&1231629840508260503>, a new sprint has started! ⏳ 15 minutes\r\n\r\nSprinters: <@${interaction.user.id}>`,
       components: [{
         type: 1,
         components: [{
@@ -35,16 +35,16 @@ module.exports = async function(interaction) {
       }],
       fetchReply: true
     }).then((message) => {
-      interaction.client.sprint = {
+      interaction.client.sprint[channel] = {
         message: message,
         sprinters: [interaction.user.id]
       };
     });
   }
 
-  function joinSprint() {
-    if (interaction.client.sprint) {
-      if (interaction.client.sprint.sprinters.includes(interaction.user.id)) {
+  function joinSprint(channel) {
+    if (interaction.client.sprint[channel]) {
+      if (interaction.client.sprint[channel].sprinters.includes(interaction.user.id)) {
         interaction.reply({
           content: 'You already joined this sprint!',
           ephemeral: true
@@ -59,20 +59,20 @@ module.exports = async function(interaction) {
           });
         }
 
-        interaction.client.sprint.sprinters.push(interaction.user.id);
-        updateSprinters();
+        interaction.client.sprint[channel].sprinters.push(interaction.user.id);
+        updateSprinters(channel);
       }
     } else {
-      startSprint();
+      startSprint(channel);
     }
   }
 
-  function leaveSprint() {
-    if (interaction.client.sprint) {
-      if (interaction.client.sprint.sprinters.includes(interaction.user.id)) {
+  function leaveSprint(channel) {
+    if (interaction.client.sprint[channel]) {
+      if (interaction.client.sprint[channel].sprinters.includes(interaction.user.id)) {
         interaction.deferUpdate();
-        interaction.client.sprint.sprinters = interaction.client.sprint.sprinters.filter((sprinter) => sprinter != interaction.user.id);
-        updateSprinters();
+        interaction.client.sprint[channel].sprinters = interaction.client.sprint[channel].sprinters.filter((sprinter) => sprinter != interaction.user.id);
+        updateSprinters(channel);
       } else {
         interaction.reply({
           content: "You haven't joined this sprint, you twat.",
@@ -87,11 +87,11 @@ module.exports = async function(interaction) {
     }
   }
 
-  function updateSprinters() {
-    interaction.client.sprint.message.content = interaction.client.sprint.message.content.split('Sprinters:').shift() + `Sprinters: ${interaction.client.sprint.sprinters.length > 0 ? interaction.client.sprint.sprinters.map((sprinter) => '<@' + sprinter + '>').join(' ') : '*No one... cowards.*'}`;
+  function updateSprinters(channel) {
+    interaction.client.sprint[channel].message.content = interaction.client.sprint[channel].message.content.split('Sprinters:').shift() + `Sprinters: ${interaction.client.sprint[channel].sprinters.length > 0 ? interaction.client.sprint[channel].sprinters.map((sprinter) => '<@' + sprinter + '>').join(' ') : '*No one... cowards.*'}`;
 
-    interaction.client.sprint.message.edit({
-      content: interaction.client.sprint.message.content
+    interaction.client.sprint[channel].message.edit({
+      content: interaction.client.sprint[channel].message.content
     });
   }
 }

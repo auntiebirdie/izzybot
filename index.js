@@ -1,7 +1,9 @@
 const secrets = require('./secrets.json');
 const commands = require('./commands.json');
 
+const Cron = require('node-cron');
 const Discord = require('discord.js');
+const JSONdb = require('simple-json-db');
 
 const client = new Discord.Client({
   intents: [Discord.GatewayIntentBits.Guilds, Discord.GatewayIntentBits.GuildMessages],
@@ -21,31 +23,77 @@ client.on('ready', async () => {
 
   await doc.loadInfo();
 
+  client.sprint = {}
+
   setInterval(function() {
-    if (client.sprint) {
-      let timeRemaining = 15 - Math.ceil((Date.now() - client.sprint.message.createdTimestamp) / (60 * 1000));
+    for (let channel in client.sprint) {
+      if (client.sprint[channel]) {
+        let timeRemaining = 15 - Math.ceil((Date.now() - client.sprint[channel].message.createdTimestamp) / (60 * 1000));
 
-      if (timeRemaining <= 0) {
-        client.sprint.message.edit({
-          content: 'This sprint has ended.',
-          components: []
-        });
+        if (timeRemaining <= 0) {
+          client.sprint[channel].message.edit({
+            content: 'This sprint has ended.',
+            components: []
+          });
 
-        if (client.sprint.sprinters.length > 0) {
-          client.sprint.message.reply(`All right, the sprint is over.  How did everyone do? ${client.sprint.sprinters.map((sprinter) => '<@' + sprinter + '>').join(' ')}`);
-          client.sprint = null;
+          if (client.sprint[channel].sprinters.length > 0) {
+            client.sprint[channel].message.reply(`All right, the sprint is over.  How did everyone do? ${client.sprint[channel].sprinters.map((sprinter) => '<@' + sprinter + '>').join(' ')}`);
+            client.sprint[channel] = null;
+          } else {
+            client.sprint[channel] = null;
+          }
         } else {
-          client.sprint = null;
-        }
-      } else {
-        client.sprint.message.content = `There is an ongoing sprint. ${timeRemaining % 2 == 0 ? '⌛' : '⏳'} ${timeRemaining} minute${timeRemaining == 1 ? '' : 's'}` + client.sprint.message.content.split('minutes').pop();
+          client.sprint[channel].message.content = `There is an ongoing sprint. ${timeRemaining % 2 == 0 ? '⌛' : '⏳'} ${timeRemaining} minute${timeRemaining == 1 ? '' : 's'}` + client.sprint[channel].message.content.split('minutes').pop();
 
-        client.sprint.message.edit({
-          content: client.sprint.message.content
-        });
+          client.sprint[channel].message.edit({
+            content: client.sprint[channel].message.content
+          });
+        }
       }
     }
   }, 60 * 1000);
+
+  Cron.schedule('0 * * * *', () => {
+    const today = new Date()
+    const currentMonth = today.getUTCMonth()
+    const currentDay = today.getUTCDate()
+    const currentHour = today.getUTCHours()
+
+    client.guilds.cache.each(async (guild) => {
+      const serverDb = new JSONdb(`db/servers/${guild.id}.json`)
+      const announcementTime = serverDb.get('time')
+
+      if (announcementTime && announcementTime == currentHour) {
+        const announcementChannel = serverDb.get('channel')
+
+        if (announcementChannel) {
+          guild.channels.fetch(announcementChannel).then((channel) => {
+            guild.members.fetch().then((members) => {
+              members = members.filter((member) => !member.user.bot)
+              let birthdayMembers = []
+
+              members.each((member) => {
+                const userDb = new JSONdb(`members/${member.id}.json`)
+                const birthdayData = userDb.get(guild.id)
+
+                if (birthdayData && birthdayData.month == currentMonth && birthdayData.day == currentDay) {
+                  birthdayMembers.push(`<@${member.id}>`)
+                }
+              })
+
+              if (birthdayMembers.length > 0) {
+                let birthdayList = new Intl.ListFormat('en', {
+                  style: 'long'
+                }).format(birthdayMembers)
+
+                channel.send(`Happy birthday, ${birthdayList}!`)
+              }
+            })
+          }).catch(() => {})
+        }
+      }
+    })
+  })
 });
 
 
@@ -89,7 +137,7 @@ client.on('messageCreate', async (message) => {
     var specific = [];
 
     for (let row of rows) {
-      if (row.quote?.trim()) {
+      if (row.quote?.trim() && (!row.users || row.users?.split(',').includes(message.author.id))) {
         if (!row.trigger) {
           generic.push(row.quote);
         } else {
@@ -109,33 +157,35 @@ client.on('messageCreate', async (message) => {
 
     responses = specific.length > 0 ? [...specific, ...specific] : [...generic, ...generic];
 
-    for (var i = responses.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = responses[i];
-      responses[i] = responses[j];
-      responses[j] = temp;
-    }
+    if (responses.length > 0) {
+      for (var i = responses.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = responses[i];
+        responses[i] = responses[j];
+        responses[j] = temp;
+      }
 
-    message.reply(responses[0]).then((msg) => {
-      client.channels.fetch(secrets.DISCORD.DEBUG_CHANNEL_ID).then((channel) => {
-        channel.send({
-          embeds: [{
-            title: `#${message.channel.name}`,
-            url: message.url,
-            description: message.content,
-            thumbnail: {
-              url: responses[0].startsWith('http') ? responses[0] : null
-            },
-            fields: [{
-              name: 'response',
-              value: responses[0].startsWith('http') ? 'gif' : responses[0]
-            }, {
-              name: 'triggers',
-              value: triggered.size > 0 ? [...triggered].join(', ') : '*'
+      message.reply(responses[0]).then((msg) => {
+        client.channels.fetch(secrets.DISCORD.DEBUG_CHANNEL_ID).then((channel) => {
+          channel.send({
+            embeds: [{
+              title: `#${message.channel.name}`,
+              url: message.url,
+              description: message.content,
+              thumbnail: {
+                url: responses[0].startsWith('http') ? responses[0] : null
+              },
+              fields: [{
+                name: 'response',
+                value: responses[0].startsWith('http') ? 'gif' : responses[0]
+              }, {
+                name: 'triggers',
+                value: triggered.size > 0 ? [...triggered].join(', ') : '*'
+              }]
             }]
-          }]
+          });
         });
       });
-    });
+    }
   }
 });
